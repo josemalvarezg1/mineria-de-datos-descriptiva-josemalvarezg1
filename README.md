@@ -1,9 +1,12 @@
+# Titulo
+[![Build Status](https://img.shields.io/travis/KunalKapadia/express-mongoose-es6-rest-api/master.svg?style=flat-square)](https://travis-ci.org/KunalKapadia/express-mongoose-es6-rest-api)
+
+
 ## Tabla de contenido
 
 * [Resumen](#resumen)
 * [Archivos que contiene el repositorio](#archivos-que-contiene-el-repositorio)
 * [Herramientas](#herramientas)
-* [Clúster](#clúster)
 * [Implementaciones](#implementaciones)
 * [Datasets](#datasets)
 * [Inicialización](#inicialización)
