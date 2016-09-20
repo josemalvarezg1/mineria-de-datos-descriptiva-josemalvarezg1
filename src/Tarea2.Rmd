@@ -1,0 +1,44 @@
+---
+title: "Tarea 2 - Minería de datos descriptiva"
+output:
+  html_document:
+    theme: readable
+    toc: yes
+    toc_depth: 3
+  pdf_document:
+    toc: yes
+    toc_depth: 2
+date: "Octubre 9, 2016"
+---
+
+
+# Clustering
+
+## Universidades
+```{r, include = FALSE}
+universidades = read.csv("data/Universidades.csv")
+```
+### $K$-medias
+
+### Clasificación Jerárquica 
+
+
+## Estudiantes
+```{r, include = FALSE}
+estudiantes = read.csv(file = "data/Estudiantes.csv", header = F)
+estudiantes = estudiantes[,1:2]
+
+```
+### $K$-medias
+
+### Clasificación Jerárquica 
+# Reglas de asociación
+```{r, include = FALSE}
+library(arules)
+library(arulesViz)
+
+alimentacion <- read.transactions("data/Alimentacion.csv", format = "basket", sep=',',rm.duplicates=TRUE)
+
+
+```
+
