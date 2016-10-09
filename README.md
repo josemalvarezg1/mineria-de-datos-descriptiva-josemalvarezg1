@@ -51,7 +51,8 @@ Los conjuntos de datos utilizados fueron los siguientes:
 |  Universidades.csv             		 | 
 
 # Inicialización
-Se deberá descargar el siguiente repositorio o clonarlo con el siguiente comando:
+Se deberá descargar el siguiente repositorio o clonarlo con el comando:
+
 git clone https://github.com/ICDRepository-I-2016/mineria-de-datos-descriptiva-josemalvarezg1.git
 
 Seguidamente, deberá ejecutar el script Tarea2.r desde RStudio.
