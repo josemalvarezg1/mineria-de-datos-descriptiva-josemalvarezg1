@@ -5,7 +5,6 @@
 * [Resumen](#resumen)
 * [Archivos que contiene el repositorio](#archivos-que-contiene-el-repositorio)
 * [Herramientas](#herramientas)
-* [Implementaciones](#implementaciones)
 * [Datasets](#datasets)
 * [Inicialización](#inicialización)
 * [Creador](#creador)
@@ -50,6 +49,12 @@ Los conjuntos de datos utilizados fueron los siguientes:
 |  Alimentacion.csv            	 		 | 		
 |  Estudiantes.csv             			 | 
 |  Universidades.csv             		 | 
+
+# Inicialización
+Se deberá descargar el siguiente repositorio o clonarlo con el siguiente comando:
+git clone https://github.com/ICDRepository-I-2016/mineria-de-datos-descriptiva-josemalvarezg1.git
+
+Seguidamente, deberá ejecutar el script Tarea2.r desde RStudio.
 
 
 # Creador
