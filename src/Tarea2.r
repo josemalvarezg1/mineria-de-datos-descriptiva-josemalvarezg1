@@ -132,7 +132,7 @@ library(arules)
 library(arulesViz)
 #Se lee el dataset Alimentacion
 alimentacion <- read.transactions("data/Alimentacion.csv", sep=',')
-#Se transforma  dataframe en transaccional
+#Se transforma dataframe en transaccional
 reglas <- apriori(alimentacion, parameter=list(support=0.001, confidence = 0.65))
 summary(reglas)
 #Se muestran las las 10 transacciones con mayor frecuencia en el dataset

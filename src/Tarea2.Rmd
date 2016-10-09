@@ -1,44 +1,290 @@
 ---
 title: "Tarea 2 - Minería de datos descriptiva"
-output:
-  html_document:
-    theme: readable
-    toc: yes
-    toc_depth: 3
-  pdf_document:
-    toc: yes
-    toc_depth: 2
+author: "José Manuel Alvarez García"
 date: "Octubre 9, 2016"
+output: pdf_document
 ---
+
+Para instalar el paquete knit se debe ejecutar lo siguiente:
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+install = function(pkg)
+{
+  # Si ya está instalado, no lo instala.
+  if (!require(pkg, character.only = TRUE)) {
+    install.packages(pkg)
+    if (!require(pkg, character.only = TRUE)) stop(paste("load failure:", pkg))
+  }
+}
+```
+
+Inicialmente se debe estar posicionado en el directorio de la tarea:
+```{r}
+setwd("C:/Users/José Manuel/Documents/ICD/mineria-de-datos-descriptiva-josemalvarezg1")
+```
 
 
 # Clustering
 
 ## Universidades
-```{r, include = FALSE}
-universidades = read.csv("data/Universidades.csv")
+
+Para leer el dataset Universidades se debe ejecutar lo siguiente:
+```{r}
+universidades = read.csv(file = "../data/Universidades.csv", header = T, dec = ".", sep = ",")
 ```
+Esto indica que el archivo a leer posee en su primera fila los nombres de las columnas, el separador decimal es el punto (.), y el separador de cada elemento es la coma (,).
+
+Seguidamente se debe preparar el dataset para que sólo contenga datos numéricos a trabajar:
+```{r}
+#Se elimina la primera columna 
+universidades = universidades[,-1]
+#Se colocan como nombres de fila los ID de cada universidad
+rownames(universidades) <- universidades[,1]
+#Se elimina la primera columna del dataset
+universidades = universidades[,-1]
+#Sólo se trabajará con las columnas de las 12 a la 15 que contienen datos numéricos
+universidades = universidades[,12:15]
+```
+
 ### $K$-medias
+Ahora bien, se buscará el K más adecuado para aplicar el método de K-Medias. Esto se realizará mediante el Codo de Jambu:
+```{r, warning=FALSE}
+InerciaIC = rep(0,50)
+for (k in 1:50) {
+  grupos = kmeans(universidades, k)
+  InerciaIC[k] = grupos$tot.withinss
+}
+```
+Si se grafica la Inercia Inter-Clases se puede observar que cambia muy poco a partir de K=2 y K=3
+```{r}
+plot(InerciaIC, col = "blue", type = "b")
+```
+
+Por lo que calcula K-Medias con K=3 y 100 iteraciones, y se grafica: 
+```{r}
+clusters <- kmeans(universidades, 3, iter.max = 100) 
+#Se grafica el dataset inicial
+plot(universidades, pch = 20)
+#Se colorean los tres grupos en el gráfico
+plot(universidades, col = clusters$cluster)
+```
+
+Si se desea realizar un análisis exploratorio para estudiar más a fondo el dataset se debe realizar lo siguiente: 
+```{r, warning=FALSE}
+library(FactoMineR)
+#Se muestras valores de interés del dataset
+# head(universidades)
+# dim(universidades)
+# names(universidades)
+# str(universidades)
+# attributes(universidades)
+# summary(universidades)
+# pca <- PCA(universidades)
+```
 
 ### Clasificación Jerárquica 
+Se trabajará el dataset pre-procesado anteriormente como una matriz y luego se calculará la matriz de distancia:
+```{r}
+datos = as.matrix(universidades)
+distancia = dist(datos)
+```
 
+Se aplicarán y se graficarán los métodos de clasificación jerárquica.
+Para el método Complete:
+```{r}
+cluster = hclust(distancia, method = "complete")
+plot(cluster)
+#Se determina la altura requerida con k clusters, cortando el dendograma con k clases:
+corteD = cutree(cluster, k = 3)
+#Observamos la cantidad de clusters
+unique(corteD)
+#Graficamos los clusters
+plot(universidades, col = corteD, main = "COMPLETE")
+```
+
+Para el método Single:
+```{r}
+cluster = hclust(distancia, method = "single")
+plot(cluster)
+#Se determina la altura requerida con k clusters, cortando el dendograma con k clases:
+corteD = cutree(cluster, k = 3)
+#Observamos la cantidad de clusters
+unique(corteD)
+#Graficamos los clusters
+plot(universidades, col = corteD, main = "SINGLE")
+```
+
+Para el método Average:
+```{r}
+cluster = hclust(distancia, method = "average")
+plot(cluster)
+#Se determina la altura requerida con k clusters, cortando el dendograma con k clases:
+corteD = cutree(cluster, k = 3)
+#Observamos la cantidad de clusters
+unique(corteD)
+#Graficamos los clusters
+plot(universidades, col = corteD, main = "AVERAGE")
+```
+
+Para el método Ward:
+```{r}
+cluster = hclust(distancia, method = "ward.D")
+plot(cluster)
+#Se determina la altura requerida con k clusters, cortando el dendograma con k clases:
+corteD = cutree(cluster, k = 3)
+#Observamos la cantidad de clusters
+unique(corteD)
+#Graficamos los clusters
+plot(universidades, col = corteD, main = "WARD")
+```
+
+Se puede observar que la clasificación por el método Ward es la que más se adapta al clustering del dataset utilizando K-Medias con K=3.
 
 ## Estudiantes
-```{r, include = FALSE}
-estudiantes = read.csv(file = "data/Estudiantes.csv", header = F)
-estudiantes = estudiantes[,1:2]
-
+Para leer el dataset Estudiantes se debe ejecutar lo siguiente:
+```{r}
+estudiantes = read.csv(file = "../data/Estudiantes.csv", header = F)
 ```
+Seguidamente se debe preparar el dataset para que sólo contenga datos numéricos a trabajar:
+```{r}
+estudiantes = estudiantes[,1:2]
+```
+
 ### $K$-medias
+Ahora bien, se buscará el K más adecuado para aplicar el método de K-Medias. Esto se realizará mediante el Codo de Jambu:
+```{r, warning=FALSE}
+InerciaIC = rep(0,50)
+for (k in 1:50) {
+  grupos = kmeans(estudiantes, k)
+  InerciaIC[k] = grupos$tot.withinss
+}
+```
+Si se grafica la Inercia Inter-Clases se puede observar que cambia muy poco a partir de K=2 y K=3
+```{r}
+plot(InerciaIC, col = "blue", type = "b")
+```
+
+Por lo que calcula K-Medias con K=3 y 100 iteraciones, y se grafica: 
+```{r}
+clusters <- kmeans(estudiantes, 3, iter.max = 100) 
+plot(estudiantes, pch = 20)
+#Se especifican los tres grupos (centroides) en el gráfico
+points(clusters$centers, pch = 19, col = "blue", cex = 2)
+#Se colorean los tres grupos en el gráfico
+plot(estudiantes, col = clusters$cluster)
+```
+
+Si se desea realizar un análisis exploratorio para estudiar más a fondo el dataset se debe realizar lo siguiente: 
+```{r, warning=FALSE}
+library(FactoMineR)
+#Se muestras valores de interés del dataset
+# head(estudiantes)
+# dim(estudiantes)
+# names(estudiantes)
+# str(estudiantes)
+# attributes(estudiantes)
+# summary(estudiantes)
+# pca <- PCA(estudiantes)
+```
 
 ### Clasificación Jerárquica 
+Se trabajará el dataset pre-procesado anteriormente como una matriz y luego se calculará la matriz de distancia:
+```{r}
+#datos = as.matrix(estudiantes)
+#distancia = dist(datos)
+```
+Pero al momento de realizar esto, se mostrará un mensaje de error que indica "cannot allocate vector of size 335.3 Gb". Esto ocurre porque se desean utilizar 335.3 GB de memoria RAM para calcular la matriz de distancias, pero esto es imposible en mi caso debido a que poseo una memoria RAM de 2GB y RStudio como tal ocupa 104,00MB de la misma.
+
 # Reglas de asociación
-```{r, include = FALSE}
+Se deben incluir las bibliotecas "arules" y "arulesViz" de la siguiente manera:
+```{r, warning=FALSE, message=FALSE}
 library(arules)
 library(arulesViz)
-
-alimentacion <- read.transactions("data/Alimentacion.csv", format = "basket", sep=',',rm.duplicates=TRUE)
-
-
 ```
+Para leer el dataset Alimentacion se debe ejecutar lo siguiente:
+```{r, warning=FALSE}
+alimentacion <- read.transactions("../data/Alimentacion.csv", sep=',')
+```
+
+Seguidamente, se convierte el dataset a valores transaccionales para generar las reglas de asociación y se muestra un resumen de las mismas:
+```{r}
+reglas <- apriori(alimentacion, parameter=list(support=0.001, confidence = 0.65))
+summary(reglas)
+```
+Con esto, se genera un set de 1409 reglas donde se obtienen los valores MinSupport=0.001161, MinConfidence=0.6500 y MinLift=2.674. Se utilizaron los valores support=0.001 y confidence=0.65 para generar una gran cantidad de reglas que se den en proporción a las transacciones del dataset. 
+
+Para conocer las 10 transacciones con mayor número de apariciones en el dataset se realiza lo siguiente:
+```{r}
+itemFrequencyPlot(alimentacion,topN=10,type="absolute")
+```
+
+Para obtener la probabilidad de que un estudiante consuma refrescos si consime chicles se realiza lo siguiente:
+```{r}
+#Se obtienen las subreglas que cumplan chicles -> refrescos
+subreglas = subset(reglas, subset=lhs %pin% "chicles" & rhs %pin% "refrescos")
+#Se muestra la probabilidad de que un estudiante consuma refrescos dado que consume chicles
+quality(subreglas)$confidence
+```
+
+Para ordenar las reglas se tiene lo siguiente:
+```{r}
+#Se ordenan las reglas por confianza
+confianzaAlta <-sort(reglas, by="confidence", decreasing=TRUE)
+inspect(head(confianzaAlta))
+```
+Se observa que las primeras seis reglas tienen una confianza de 1, por lo que estas siempre serán verídicas.
+
+```{r}
+#Se ordenan las reglas por soporte
+supportAlto <-sort(reglas, by="support", decreasing=TRUE)
+inspect(head(supportAlto))
+```
+Se observa que las primeras seis reglas son las que más frecuentan en el dataset.
+
+```{r}
+#Se ordenan las reglas por lift
+liftAlto <-sort(reglas, by="lift", decreasing=TRUE)
+inspect(head(liftAlto))
+```
+Se observa que las primeras seis reglas son las más probables en ocurrir.
+
+Si se obtienen todas las subreglas que contengan en su consecuente al producto "Naranja" y se muestran:
+```{r}
+#Se obtienen las subreglas que cumplan ... -> Naranja
+subreglas = subset(reglas, subset = rhs %ain% "Naranja")
+#Se muestran las subreglas generadas
+inspect(subreglas)
+```
+Se observa que el producto que más se repite en las transacciones es "Jengibre".
+
+Si se obtienen todas las subreglas que contengan en su precedente a los productos "Flips", "Nutella" y "Vodka" y se muestran:
+```{r}
+#Se obtienen las subreglas que cumplan Flips, Nutella, Vodka -> ...
+subreglas = subset(reglas, subset=lhs %ain% c("Flips","Nutella","Vodka"))
+#Se muestran las subreglas generadas
+inspect(subreglas)
+```
+Se observa que el producto más recomendable es "Jugo de Naranja".
+
+
+# Metodología CRISP-DM
+
+### Comprensión del negocio
+Se desea que se apliquen técnicas descriptivas y de clustering a los datasets provistos por parte del Ministerio de Educación y Salud.
+
+### Comprensión de datos
+Se tienen 3 datasets (Universidades, Estudiantes y Alimentacion) a procesar.
+
+### Preparación de datos
+Al momento de leer los datasets, se deben pre-procesar; esto se realizó al sólo seleccionar los datos (columnas) numéricos de Universidades.csv y sólo trabajar con las dos primeras columnas de Estudiantes.csv para ignorar la columna clase.
+
+### Modelado
+Se desea buscar cuál es la técnica más adecuada para trabajar los datos; esto se realizó al obtener el K más apropiado para aplicar el método de K-Medias y al seleccionar la mejor clasificación jerárquica para Universidades.csv.
+
+### Evaluación
+Se considera que los datos provistos son adecuados para la aplicación de las técnicas impuestas en esta tarea.
+
+### Despliegue
+Se deberá explicar al cliente toda la implementación realizada para pre-procesar los datasets y la aplicación y la utilidad de las técnicas hacia los mismos.
+
 
